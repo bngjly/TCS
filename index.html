@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🐍 贪吃蛇 · Snake Game</title>
+  <meta name="description" content="一个赛博朋克风格的网页版贪吃蛇游戏，支持用户登录和成绩记录。">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+  <!-- 动态背景光球 -->
+  <div class="bg-orbs">
+    <div class="orb orb--cyan"></div>
+    <div class="orb orb--fuchsia"></div>
+  </div>
+
+  <!-- ===== 登录/注册视图 ===== -->
+  <div id="auth-view" class="view active">
+    <div class="glass-panel">
+      <h1 class="gradient-title"><span class="emoji">🐍</span>贪吃蛇</h1>
+
+      <!-- Tabs -->
+      <div class="auth-tabs">
+        <button class="auth-tab active" data-tab="login">登录</button>
+        <button class="auth-tab" data-tab="register">注册</button>
+      </div>
+
+      <!-- 登录表单 -->
+      <div id="login-form" class="auth-form">
+        <div class="input-group">
+          <label class="input-label" for="login-username">用户名</label>
+          <input type="text" id="login-username" class="auth-input" placeholder="请输入用户名" autocomplete="username">
+        </div>
+        <div class="input-group">
+          <label class="input-label" for="login-password">密码</label>
+          <input type="password" id="login-password" class="auth-input" placeholder="请输入密码"
+            autocomplete="current-password">
+        </div>
+        <button id="login-btn" class="btn btn-primary">登 录</button>
+        <div class="auth-divider"><span>或者</span></div>
+        <button id="guest-btn" class="btn btn-ghost">🎮 游客模式</button>
+      </div>
+
+      <!-- 注册表单 -->
+      <div id="register-form" class="auth-form" style="display:none;">
+        <div class="input-group">
+          <label class="input-label" for="register-username">用户名</label>
+          <input type="text" id="register-username" class="auth-input" placeholder="至少2个字符" autocomplete="username">
+        </div>
+        <div class="input-group">
+          <label class="input-label" for="register-password">密码</label>
+          <input type="password" id="register-password" class="auth-input" placeholder="至少4个字符"
+            autocomplete="new-password">
+        </div>
+        <button id="register-btn" class="btn btn-primary">注 册</button>
+      </div>
+
+      <p id="auth-message" class="auth-message"></p>
+    </div>
+  </div>
+
+  <!-- ===== 游戏视图 ===== -->
+  <div id="game-view" class="view">
+    <!-- 顶部栏 -->
+    <div class="game-header">
+      <div class="user-info">
+        <span class="user-name">👋 <span id="user-display"></span></span>
+        <span class="login-time">登录于 <span id="login-time-display"></span></span>
+      </div>
+      <div class="header-actions">
+        <button id="history-btn" class="btn btn-secondary btn-sm">📊 记录</button>
+        <button id="logout-btn" class="btn btn-secondary btn-sm">退出</button>
+      </div>
+    </div>
+
+    <!-- 游戏画布 -->
+    <div class="canvas-container">
+      <canvas id="game-canvas" width="400" height="400"></canvas>
+    </div>
+
+    <!-- 分数和控制 -->
+    <div class="score-panel">
+      <div class="score-item">
+        <span class="score-label">当前分数</span>
+        <span class="score-value highlight" id="current-score">0</span>
+      </div>
+      <div class="game-controls">
+        <button id="start-btn" class="btn btn-primary btn-sm">开始游戏</button>
+        <button id="pause-btn" class="btn btn-secondary btn-sm" disabled>暂停</button>
+      </div>
+      <div class="score-item">
+        <span class="score-label">最高分</span>
+        <span class="score-value" id="high-score">0</span>
+      </div>
+    </div>
+
+    <!-- 移动端方向键 -->
+    <div class="d-pad">
+      <button class="d-btn" data-dir="up">▲</button>
+      <button class="d-btn" data-dir="left">◀</button>
+      <button class="d-btn" data-dir="right">▶</button>
+      <button class="d-btn" data-dir="down">▼</button>
+    </div>
+  </div>
+
+  <!-- ===== Game Over 弹窗 ===== -->
+  <div id="game-over-overlay" class="game-over-overlay">
+    <div class="game-over-card">
+      <h2 class="game-over-title">游戏结束</h2>
+      <p class="game-over-stat">得分：<span id="final-score">0</span></p>
+      <p class="game-over-stat">时长：<span id="final-duration">0分00秒</span></p>
+      <button id="restart-btn" class="btn btn-primary">再来一局 🎮</button>
+    </div>
+  </div>
+
+  <!-- ===== 历史记录面板 ===== -->
+  <div id="history-panel" class="history-panel">
+    <div class="history-card">
+      <h2>📊 游戏记录</h2>
+      <table class="history-table">
+        <thead>
+          <tr>
+            <th>日期</th>
+            <th>分数</th>
+            <th>时长</th>
+          </tr>
+        </thead>
+        <tbody id="history-tbody"></tbody>
+      </table>
+      <button id="close-history-btn" class="btn btn-secondary history-close">关闭</button>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/storage.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/game.js"></script>
+  <script src="js/app.js"></script>
+</body>
+
+</html>
